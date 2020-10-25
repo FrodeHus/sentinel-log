@@ -12,4 +12,6 @@ RUN usermod -a -G adm,syslog sentinel
 ADD . .
 RUN mkdir /sentinel/rsyslog && chown -R sentinel.sentinel /sentinel
 USER sentinel
+EXPOSE 5142/tcp
+EXPOSE 5142/udp
 CMD ["./entrypoint.sh"]
