@@ -1,0 +1,15 @@
+source "https://rubygems.org"
+# You can use fixed version of Fluentd and its plugins
+gem "fluentd","1.11.4"
+# gem "fluent-plugin-elasticsearch", "2.4.0"
+# gem "fluent-plugin-kafka", "0.6.5"
+gem "fluent-plugin-rewrite-tag-filter"
+#gem "fluent-plugin-s3", "1.1.0"
+#gem "fluent-plugin-td"
+#gem "fluent-plugin-td-monitoring"
+#gem "fluent-plugin-webhdfs", "1.2.2"
+# # Add plugins you want to use
+gem "fluent-plugin-parser"
+gem "fluent-plugin-azure-loganalytics"
+gem "fluent-plugin-filter-geoip"
+gem "fluent-plugin-multi-format-parser"

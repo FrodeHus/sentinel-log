@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    sentinel-log:
+        image: chaos.azurecr.io/sentinel-log:0.1
+        ports:
+        - "514:514"
+        - "514:514/udp"
+        volumes:
+        - "/share/Container/rsyslog:/var/log/remotelogs"
