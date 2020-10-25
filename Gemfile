@@ -9,7 +9,7 @@ gem "fluent-plugin-rewrite-tag-filter"
 #gem "fluent-plugin-td-monitoring"
 #gem "fluent-plugin-webhdfs", "1.2.2"
 # # Add plugins you want to use
+gem "fluent-plugin-geoip"
 gem "fluent-plugin-parser"
 gem "fluent-plugin-azure-loganalytics"
-gem "fluent-plugin-filter-geoip"
 gem "fluent-plugin-multi-format-parser"
