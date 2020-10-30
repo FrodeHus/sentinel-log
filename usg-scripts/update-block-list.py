@@ -9,7 +9,11 @@ messages = queue_client.receive_messages()
 for msg in messages:
     decoded = base64.b64decode(msg.content)
     reported_ip = json.loads(decoded)
-    if reported_ip.malicious > 0:
+    malicious_reports = reported_ip["malicious"]
+    if malicious_reports > 0:
+        ip = reported_ip["ip"]
+
         print(
-            f"IP {reported_ip.ip} is reported as malicious by {reported_ip.malicious} - adding to blocklist"
+            f"IP {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
         )
+    queue_client.delete_message(msg)
