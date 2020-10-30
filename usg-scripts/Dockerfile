@@ -5,8 +5,8 @@ ENV UNIFI_CONTROLLER=127.0.0.1
 ENV AZURE_STORAGE_CONNECTION_STRING=dummyconnection
 RUN useradd --no-create-home --shell /bin/bash threatupdater 
 WORKDIR /threatupdater
-ADD update-block-list.py .
 ADD requirements.txt .
 RUN pip install -r requirements.txt
+ADD update-block-list.py .
 USER threatupdater
 CMD ["python", "update-block-list.py"]

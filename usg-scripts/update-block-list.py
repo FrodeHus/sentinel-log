@@ -34,6 +34,7 @@ class FirewallUpdater:
     def __init__(self, url: str, username: str, password: str):
         self.url = url
         self._req = requests.Session()
+        self._req.headers["Content-Type"] = "application/json;charset=utf-8"
         self._login(username, password)
         self._bad_ip_group = None
 
@@ -70,7 +71,7 @@ class FirewallUpdater:
         endpoint = (
             f"https://{self.url}:8443/api/s/default/rest/firewallgroup/{group_id}"
         )
-        resp = self._req.put(endpoint, self._bad_ip_group)
+        resp = self._req.put(endpoint, json.dumps(self._bad_ip_group))
         if resp.status_code != 200:
             print("!! failed to update firewall group")
 
