@@ -1,4 +1,4 @@
-from azure.storage.queue import QueueServiceClient, QueueClient, QueueMessage
+from azure.storage.queue import QueueClient
 import os, time, base64, json, requests, sys
 
 
