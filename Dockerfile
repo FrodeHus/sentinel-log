@@ -6,7 +6,8 @@ RUN apt update && \
     gem install bundler && \
     bundle install && \
     apt remove -y build-essential curl && \
-    apt autoremove -y
+    apt autoremove -y && \
+    apt clean &&  rm -rf /var/lib/apt/lists/*
 RUN useradd --create-home --shell /bin/bash sentinel
 RUN usermod -a -G adm,syslog sentinel
 ADD . .
