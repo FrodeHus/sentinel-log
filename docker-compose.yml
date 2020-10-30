@@ -2,9 +2,13 @@ version: '3'
 
 services:
     sentinel-log:
-        image: chaos.azurecr.io/sentinel-log:0.5
+        image: chaos.azurecr.io/sentinel-log:latest
+        environment:
+          PUID: 1001
+          PGID: 100
         ports:
         - "5142:5142"
         - "5142:5142/udp"
         volumes:
-        - "/share/Container/rsyslog:/sentinel/rsyslog/remotelogs"
+        - "/share/remotelogs:/sentinel/rsyslog/remotelogs"
+        - "/share/remotelogs/fluentd.conf:/sentinel/fluentd.conf"

@@ -1,5 +1,5 @@
 from azure.storage.queue import QueueServiceClient, QueueClient, QueueMessage
-import os, uuid, base64, json, requests, sys
+import os, time, base64, json, requests, sys
 
 
 def main():
@@ -11,19 +11,23 @@ def main():
     queue_name = "threatsignals"
 
     queue_client = QueueClient.from_connection_string(connect_str, queue_name)
-    messages = queue_client.receive_messages()
-    for msg in messages:
-        decoded = base64.b64decode(msg.content)
-        reported_ip = json.loads(decoded)
-        malicious_reports = reported_ip["malicious"]
-        if malicious_reports > 0:
-            ip = reported_ip["ip"]
-            print(
-                f"IP {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
-            )
-            updater.add_ip_to_group("Block IPs", ip)
-
-        queue_client.delete_message(msg)
+    while True:        
+        messages = queue_client.receive_messages()
+        count = 0
+        for msg in messages:
+            decoded = base64.b64decode(msg.content)
+            reported_ip = json.loads(decoded)
+            malicious_reports = reported_ip["malicious"]
+            if malicious_reports > 0:
+                ip = reported_ip["ip"]
+                print(
+                    f"-> {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
+                )
+                updater.add_ip_to_group("Block IPs", ip)
+            count += 1
+            queue_client.delete_message(msg)
+        print(f"=> processed {count} messages")
+        time.sleep(300)
 
 
 class FirewallUpdater:
@@ -57,7 +61,7 @@ class FirewallUpdater:
 
         ips = self._bad_ip_group["group_members"]
         if ip_addr in ips:
-            print(f"- {ip_addr} already registered")
+            print(f"-> {ip_addr} already registered - skipping")
             return
 
         ips.append(ip_addr)
@@ -66,9 +70,9 @@ class FirewallUpdater:
         endpoint = (
             f"https://{self.url}:8443/api/s/default/rest/firewallgroup/{group_id}"
         )
-        resp = self._req.put(endpoint, bad_ip_group)
+        resp = self._req.put(endpoint, self._bad_ip_group)
         if resp.status_code != 200:
-            print("failed to update firewall group")
+            print("!! failed to update firewall group")
 
 
 if __name__ == "__main__":
