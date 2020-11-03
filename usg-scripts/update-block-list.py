@@ -77,6 +77,7 @@ class FirewallUpdater:
         self._req.headers["Content-Type"] = "application/json;charset=utf-8"
         self._bad_ip_group = None
         self._username = username
+        self._password = password
 
     def _login(self, username: str, password: str):
         self._req.post(
@@ -101,7 +102,7 @@ class FirewallUpdater:
             self._bad_ip_group = bad_ip_group
 
     def add_ip_to_group(self, group_name: str, ip_addr: str):
-        self._login(self._username, password)
+        self._login(self._username, self._password)
         self._ensure_group_data(group_name)
 
         ips = self._bad_ip_group["group_members"]
@@ -114,7 +115,7 @@ class FirewallUpdater:
         self._update_group()
 
     def remove_ip_from_group(self, group_name : str, ip_addr : str):
-        self._login(self._username, password)
+        self._login(self._username, self._password)
         self._ensure_group_data(group_name)
         if ip_addr in self._bad_ip_group["group_members"]:
             self._bad_ip_group["group_members"].remove(ip_addr)
