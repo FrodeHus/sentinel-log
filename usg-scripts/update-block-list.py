@@ -22,10 +22,12 @@ def main():
             malicious_reports = reported_ip["malicious"]
             if malicious_reports > 0:
                 ip = reported_ip["ip"]
+                alert = reported_ip["alert"]
                 print(
-                    f"-> {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
+                    f"-> [{alert}] {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
                 )
-                data_service.add_or_update_ip(ip)
+
+                data_service.add_or_update_ip(ip, alert)
                 updater.add_ip_to_group("Block IPs", ip)
             count += 1
             queue_client.delete_message(msg)
@@ -52,11 +54,12 @@ class DataService:
             return
         self._table_service.create_table(self._table_name)
 
-    def add_or_update_ip(self, ip : str):
+    def add_or_update_ip(self, ip : str, alert_type : str):
         ip_entity = Entity()
         ip_entity.PartitionKey = "ip"
         ip_entity.RowKey = ip
         ip_entity.LastSeen = datetime.datetime.utcnow()
+        ip_entity.AlertType = alert_type
         self._table_service.insert_or_replace_entity(self._table_name, ip_entity)
 
     def remove_ip(self, ip : str):
@@ -72,7 +75,6 @@ class FirewallUpdater:
         self.url = url
         self._req = requests.Session()
         self._req.headers["Content-Type"] = "application/json;charset=utf-8"
-        self._login(username, password)
         self._bad_ip_group = None
 
     def _login(self, username: str, password: str):
@@ -98,6 +100,7 @@ class FirewallUpdater:
             self._bad_ip_group = bad_ip_group
 
     def add_ip_to_group(self, group_name: str, ip_addr: str):
+        self._login(username, password)
         self._ensure_group_data(group_name)
 
         ips = self._bad_ip_group["group_members"]
@@ -110,6 +113,7 @@ class FirewallUpdater:
         self._update_group()
 
     def remove_ip_from_group(self, group_name : str, ip_addr : str):
+        self._login(username, password)
         self._ensure_group_data(group_name)
         if ip_addr in self._bad_ip_group["group_members"]:
             self._bad_ip_group["group_members"].remove(ip_addr)
@@ -122,7 +126,7 @@ class FirewallUpdater:
         )
         resp = self._req.put(endpoint, json.dumps(self._bad_ip_group))
         if resp.status_code != 200:
-            print("!! failed to update firewall group")
+            print(f"!! failed to update firewall group: {resp.reason}")
 
 if __name__ == "__main__":
     main()
