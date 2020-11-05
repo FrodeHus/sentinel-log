@@ -82,7 +82,7 @@ class DataService:
         self._table_service.delete_entity(self._table_name, "ip", ip)
 
     def get_expired_ips(self, age_days: int = 7):
-        expired_date = datetime.datetime.now() - datetime.timedelta(days=age_days)
+        expired_date = datetime.datetime.now() - datetime.timedelta(days=int(age_days))
         expired_date_utc = datetime.datetime.utcfromtimestamp(
             expired_date.timestamp()
         ).isoformat()
