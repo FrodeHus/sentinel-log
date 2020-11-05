@@ -8,6 +8,7 @@ def main():
     username = os.getenv("UNIFI_USERNAME")
     password = os.getenv("UNIFI_PASSWORD")
     unifi_controller = os.getenv("UNIFI_CONTROLLER")
+    evict_after = os.getenv("EVICT_AFTER_DAYS", 7)
     updater = FirewallUpdater(unifi_controller, username, password)
     data_service = DataService(connect_str)
     queue_name = "threatsignals"
@@ -28,8 +29,8 @@ def main():
             count += 1
             queue_client.delete_message(msg)
         print(f"=> processed {count} messages")
-        print(f"* Evicting expired (older than 7 days) entries...")
-        expired = data_service.get_expired_ips()
+        print(f"* Evicting expired (older than {evict_after} days) entries...")
+        expired = data_service.get_expired_ips(evict_after)
         count = 0
         for ip in expired:
             print(f"-> {ip.RowKey}")
