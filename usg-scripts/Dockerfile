@@ -3,6 +3,7 @@ ENV UNIFI_USERNAME=dummy
 ENV UNIFI_PASSWORD=dummypass
 ENV UNIFI_CONTROLLER=127.0.0.1
 ENV AZURE_STORAGE_CONNECTION_STRING=dummyconnection
+ENV EVICT_AFTER_DAYS=7
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
