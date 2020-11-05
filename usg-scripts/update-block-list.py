@@ -20,7 +20,7 @@ def main():
             decoded = base64.b64decode(msg.content)
             message = json.loads(decoded)
             if "ip" in message:
-                handle_ip_signal(message)
+                handle_ip_signal(message, data_service, updater)
             elif "domain" in message:
                 handle_domain_signal(message)
             elif "url" in message:
@@ -46,17 +46,17 @@ def handle_domain_signal(message : dict):
 def handle_url_signal(message : dict):
     pass
 
-def handle_ip_signal(message: dict):
+def handle_ip_signal(message: dict, data_service, firewall_updater):
     malicious_reports = message["malicious"]
     if malicious_reports > 0:
-        ip = reported_ip["ip"]
-        alert = reported_ip["alert"]
+        ip = message["ip"]
+        alert = message["alert"]
         print(
             f"-> [{alert}] {ip} is reported as malicious by {malicious_reports} sources - adding to blocklist"
         )
 
         data_service.add_or_update_ip(ip, alert)
-        updater.add_ip_to_group("Block IPs", ip)
+        firewall_updater.add_ip_to_group("Block IPs", ip)
 
 
 class DataService:
